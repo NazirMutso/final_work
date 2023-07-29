@@ -1,6 +1,6 @@
 from airflow import DAG
-from datetime import datetime, timedelta
-from airflow.decorators import task, dag
+from datetime import datetime
+from airflow.decorators import task
 
 default_args = {
     'owner': 'nazir_mutso',
