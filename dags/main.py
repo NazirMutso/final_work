@@ -131,7 +131,7 @@ with DAG(default_args=default_args,
 
             flag = len(vacs_num.index)  # чтобы не грузить лишние вакансии
             page = 0  # страница поиска
-            while flag < 10:
+            while flag < 100:
                 logging.info(f'Парсится страница поиска №{page}')
                 try:
                     ids = get_ids(url, page)  # проверка на наличие вакансий на странице поиска
