@@ -230,7 +230,7 @@ with DAG(default_args=default_args,
         else:
             logging.error('Архив ЕГРЮЛ отсутствует в директории')
 
-    @task()  # вывод топ 10 скиллов
+    @task()  # вывод топ 10 навыков
     def get_top_skills():
         import pandas as pd
         import logging
@@ -239,20 +239,23 @@ with DAG(default_args=default_args,
         engine = create_engine('sqlite:///mt.db', echo=True)
         tele_comps = pd.read_sql_table('telecom_companies', con=engine)
         hh_vacs = pd.read_sql_table('vacancies', con=engine)
-
+        # проверка на наличие данных в БД
         if len(tele_comps.index) > 0 and len(hh_vacs.index) > 0:
             skills_list = []
             skills_set = set()
+            # поиск соответствий в названиях компаний
             for vac in hh_vacs['company_names']:
                 for comp in tele_comps['name']:
                     if vac.upper() in comp:
+                        # множество из навыков
                         skills_set.update(
                             str(hh_vacs.loc[hh_vacs['company_names'] == vac]['key_skills'].item()).split(','))
+                        # список навыков
                         skills_list += str(hh_vacs.loc[hh_vacs['company_names'] == vac]['key_skills'].item()).split(',')
                         break
-            count_skills = {k: skills_list.count(k) for k in skills_set}
-            top_skills = dict(sorted(count_skills.items(), key=lambda x: x[1], reverse=True))
-            print(*list(top_skills.items())[:10], sep='\n')
+            count_skills = {k: skills_list.count(k) for k in skills_set}  # словарь навык: колич-во повторений
+            top_skills = dict(sorted(count_skills.items(), key=lambda x: x[1], reverse=True))  # сортировка по колич-ву
+            print(*list(top_skills.items())[:10], sep='\n')  # вывод
         else:
             logging.info('Нет данных в базе для работы!')
 
